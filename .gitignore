@@ -216,3 +216,13 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Mengabaikan dataset
+data/raw/
+data/processed/
+*.csv
+*.xlsx
+
+# Mengabaikan file model yang terlalu besar (opsional, jika > 100MB)
+# *.keras
+# *.h5
