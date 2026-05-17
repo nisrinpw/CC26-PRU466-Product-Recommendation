@@ -298,14 +298,12 @@ with col_right:
         align="center",
     )
     fig2.update_layout(
-        title="Distribusi Rating",
-        showlegend=True,
-        legend=dict(orientation="v", font=dict(size=11)),
-        **CHART_THEME,
-        margin=dict(l=0, r=0, t=30, b=0),
-    )
-    st.plotly_chart(fig2, use_container_width=True)
-
+    title="Distribusi Rating",
+    showlegend=True,
+    legend=dict(orientation="v", font=dict(size=11)),
+    **CHART_THEME,
+    margin=dict(l=0, r=0, t=30, b=0),  # ← HAPUS baris ini
+)
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # ROW 3 – TREN BULANAN
