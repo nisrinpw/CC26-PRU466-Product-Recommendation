@@ -17,10 +17,7 @@ st.set_page_config(
 # ── Custom CSS ────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-    /* Main background */
     .stApp { background-color: #0f1117; }
-
-    /* Metric cards */
     [data-testid="metric-container"] {
         background: #1a1d27;
         border: 1px solid #2a2d3a;
@@ -39,8 +36,6 @@ st.markdown("""
     [data-testid="metric-container"] [data-testid="stMetricDelta"] {
         font-size: 12px !important;
     }
-
-    /* Sidebar */
     [data-testid="stSidebar"] {
         background-color: #13161f;
         border-right: 1px solid #2a2d3a;
@@ -51,8 +46,6 @@ st.markdown("""
         color: #8b8fa8 !important;
         font-size: 13px !important;
     }
-
-    /* Section headers */
     .section-header {
         font-size: 16px;
         font-weight: 600;
@@ -61,8 +54,6 @@ st.markdown("""
         padding-bottom: 8px;
         border-bottom: 1px solid #2a2d3a;
     }
-
-    /* Chart card wrapper */
     .chart-card {
         background: #1a1d27;
         border: 1px solid #2a2d3a;
@@ -70,8 +61,6 @@ st.markdown("""
         padding: 20px;
         margin-bottom: 16px;
     }
-
-    /* Insight box */
     .insight-box {
         background: #1e2235;
         border-left: 3px solid #6366f1;
@@ -81,12 +70,8 @@ st.markdown("""
         font-size: 14px;
         color: #c4c8e0;
     }
-
-    /* Hide streamlit branding */
     #MainMenu, footer { visibility: hidden; }
     .block-container { padding-top: 1.5rem; }
-
-    /* Divider */
     hr { border-color: #2a2d3a; }
 </style>
 """, unsafe_allow_html=True)
@@ -95,7 +80,6 @@ st.markdown("""
 # ── Data loading ──────────────────────────────────────────────────────────────
 @st.cache_data(show_spinner="Memuat data...")
 def load_data():
-    # Cari file CSV — sesuaikan path jika perlu
     candidates = [
         Path("data/sample_data.csv"),
         Path("../data/sample_data.csv"),
@@ -191,10 +175,9 @@ CHART_THEME = dict(
 )
 
 
-# ── Helper ────────────────────────────────────────────────────────────────────
-def apply_theme(fig, **overrides):
-    fig.update_layout(**CHART_THEME, **overrides)
-    return fig
+# ── Helper: merge overrides safely with CHART_THEME ──────────────────────────
+def themed(**overrides):
+    return {**CHART_THEME, **overrides}
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -298,12 +281,13 @@ with col_right:
         align="center",
     )
     fig2.update_layout(
-    title="Distribusi Rating",
-    showlegend=True,
-    legend=dict(orientation="v", font=dict(size=11)),
-    **CHART_THEME,
-    margin=dict(l=0, r=0, t=30, b=0),  # ← HAPUS baris ini
-)
+        title="Distribusi Rating",
+        showlegend=True,
+        legend=dict(orientation="v", font=dict(size=11)),
+        **CHART_THEME,
+    )
+    st.plotly_chart(fig2, use_container_width=True)
+
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # ROW 3 – TREN BULANAN
@@ -395,13 +379,12 @@ with col_box:
             line_color=COLORS["secondary"],
             boxmean=True,
         ))
-    fig5.update_layout(
+    fig5.update_layout(**themed(
         title="Distribusi Rating per Tahun",
         showlegend=False,
-        **CHART_THEME,
         yaxis=dict(range=[0.5, 5.5], gridcolor="#2a2d3a"),
         xaxis=dict(gridcolor="#2a2d3a", tickangle=45),
-    )
+    ))
     st.plotly_chart(fig5, use_container_width=True)
 
 
@@ -437,13 +420,12 @@ with col_prod:
             textposition="outside",
             hovertemplate="<b>%{y}</b><br>Ulasan: %{x:,}<br>Avg rating: %{marker.color:.2f}<extra></extra>",
         ))
-        fig6.update_layout(
+        fig6.update_layout(**themed(
             title=f"Top {top_n} Produk berdasarkan Volume",
             height=max(350, top_n * 28),
-            **CHART_THEME,
             xaxis=dict(gridcolor="#2a2d3a"),
             yaxis=dict(autorange="reversed", gridcolor="#2a2d3a"),
-        )
+        ))
         st.plotly_chart(fig6, use_container_width=True)
 
     with tab2:
@@ -469,13 +451,12 @@ with col_prod:
             textposition="outside",
             hovertemplate="<b>%{y}</b><br>Avg rating: %{x:.2f}<br>Ulasan: %{marker.color:,}<extra></extra>",
         ))
-        fig7.update_layout(
+        fig7.update_layout(**themed(
             title=f"Top {top_n} Produk berdasarkan Rating (min. 10 ulasan)",
             height=max(350, top_n * 28),
-            **CHART_THEME,
             xaxis=dict(range=[4.0, 5.2], gridcolor="#2a2d3a"),
             yaxis=dict(autorange="reversed", gridcolor="#2a2d3a"),
-        )
+        ))
         st.plotly_chart(fig7, use_container_width=True)
 
 with col_user:
@@ -502,13 +483,12 @@ with col_user:
         textposition="outside",
         hovertemplate="<b>%{y}</b><br>Ulasan: %{x:,}<br>Avg rating: %{marker.color:.2f}<extra></extra>",
     ))
-    fig8.update_layout(
+    fig8.update_layout(**themed(
         title=f"Top {top_n} Reviewer Paling Aktif",
         height=max(350, top_n * 28),
-        **CHART_THEME,
         xaxis=dict(gridcolor="#2a2d3a"),
         yaxis=dict(autorange="reversed", gridcolor="#2a2d3a"),
-    )
+    ))
     st.plotly_chart(fig8, use_container_width=True)
 
 
@@ -528,11 +508,12 @@ all_users["segment"] = pd.cut(all_users["reviews"], bins=bins, labels=labels)
 
 col_seg1, col_seg2, col_seg3 = st.columns(3)
 
+seg_colors = [COLORS["danger"], COLORS["warning"], COLORS["primary"],
+              COLORS["secondary"], COLORS["success"]]
+
 with col_seg1:
     seg_count = all_users["segment"].value_counts().reset_index()
     seg_count.columns = ["segment", "count"]
-    seg_colors = [COLORS["danger"], COLORS["warning"], COLORS["primary"],
-                  COLORS["secondary"], COLORS["success"]]
     fig9 = go.Figure(go.Pie(
         labels=seg_count["segment"],
         values=seg_count["count"],
@@ -541,9 +522,10 @@ with col_seg1:
         textinfo="percent+label",
         textfont=dict(size=11),
     ))
-    fig9.update_layout(title="Distribusi Segmen Pengguna",
-                       showlegend=False, **CHART_THEME,
-                       margin=dict(l=0, r=0, t=30, b=0))
+    fig9.update_layout(**themed(
+        title="Distribusi Segmen Pengguna",
+        showlegend=False,
+    ))
     st.plotly_chart(fig9, use_container_width=True)
 
 with col_seg2:
@@ -555,12 +537,11 @@ with col_seg2:
         text=seg_avg["avg_rating"].round(2),
         textposition="outside",
     ))
-    fig10.update_layout(
+    fig10.update_layout(**themed(
         title="Avg Rating per Segmen",
         yaxis=dict(range=[3.5, 5.0], gridcolor="#2a2d3a"),
         xaxis=dict(gridcolor="#2a2d3a", tickangle=15),
-        **CHART_THEME,
-    )
+    ))
     st.plotly_chart(fig10, use_container_width=True)
 
 with col_seg3:
@@ -572,12 +553,11 @@ with col_seg3:
         text=seg_vol["reviews"].map(lambda x: f"{x:,}"),
         textposition="outside",
     ))
-    fig11.update_layout(
+    fig11.update_layout(**themed(
         title="Total Ulasan per Segmen",
         yaxis=dict(gridcolor="#2a2d3a"),
         xaxis=dict(gridcolor="#2a2d3a", tickangle=15),
-        **CHART_THEME,
-    )
+    ))
     st.plotly_chart(fig11, use_container_width=True)
 
 
@@ -609,12 +589,11 @@ with col_sc:
         hovertemplate="<b>%{text}</b><br>Ulasan: %{x:,}<br>Avg rating: %{y:.2f}<extra></extra>",
         text=prod_scatter["product_id"],
     ))
-    fig12.update_layout(
+    fig12.update_layout(**themed(
         title="Produk: Volume Ulasan vs Avg Rating (min. 5 ulasan)",
         xaxis=dict(title="Jumlah Ulasan", type="log", gridcolor="#2a2d3a"),
         yaxis=dict(title="Avg Rating", range=[0.5, 5.5], gridcolor="#2a2d3a"),
-        **CHART_THEME,
-    )
+    ))
     st.plotly_chart(fig12, use_container_width=True)
 
 with col_quarter:
@@ -633,13 +612,12 @@ with col_quarter:
             mode="lines+markers",
             marker=dict(size=6),
         ))
-    fig13.update_layout(
+    fig13.update_layout(**themed(
         title="Tren Avg Rating per Kuartal",
         legend=dict(orientation="h", y=1.08),
         xaxis=dict(tickangle=45, gridcolor="#2a2d3a"),
         yaxis=dict(range=[3.5, 5.0], gridcolor="#2a2d3a"),
-        **CHART_THEME,
-    )
+    ))
     st.plotly_chart(fig13, use_container_width=True)
 
 
