@@ -47,9 +47,10 @@ def load_recommendation_system():
     model = tf.keras.models.load_model(
         MODEL_PATH,
         custom_objects={
-            'ProductInteractionLayer': ProductInteractionLayer,
-            'root_mean_squared_error_loss': root_mean_squared_error_loss
-        }
+            "ProductInteractionLayer": ProductInteractionLayer,
+            "root_mean_squared_error_loss": root_mean_squared_error_loss
+        },
+        compile=False
     )
     
     # Load scaler
