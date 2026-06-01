@@ -4,3 +4,4 @@ pandas==2.0.3
 numpy==1.23.5
 joblib==1.3.2
 plotly==5.17.0
+protobuf==3.19.6  # WAJIB DITAMBAHKAN!
